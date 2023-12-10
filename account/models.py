@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group, Permission
 
 from PIL import Image
 
@@ -24,6 +24,10 @@ class User(AbstractUser):
     patronymic = models.CharField(max_length=150, verbose_name='Отчество')
     avatar = models.ImageField(null=True, blank=True, upload_to=user_directory_path, verbose_name='Аватарка')
     fullname = models.CharField(max_length=150, verbose_name='ФИО', null=True, blank=True)
+    groups = models.ManyToManyField(Group, related_name='users', blank=True)
+    user_groups = models.ManyToManyField(Group, related_name='custom_user_set', blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name='users', blank=True)
+    user_set = None
 
     def __str__(self):
         return self.fullname
@@ -46,10 +50,8 @@ class User(AbstractUser):
 
         user_role = self.roles.all()
         # Проверяем есть ли в группах пользователя права на выполнение действия
-        for role in user_role:
-            # Если находится хоть одна группа с правами, то пользователь имеет доступ
-            if role.objects.filter(name=perm).exists():
-                return True
+        if user_role.objects.filter(name=perm).exists():
+            return True
         return False
 
     def get_fullname(self):
@@ -58,6 +60,25 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+
+class Student(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Логин')
+    full_name = models.CharField(verbose_name='ФИО студента', max_length=150)
+    name = models.CharField(verbose_name='Имя', max_length=150)
+
+    def __str__(self):
+        return self.full_name
+
+
+class Teacher(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Преподаватель')
+    full_name = models.CharField(verbose_name='ФИО студента', max_length=150)
+    name = models.CharField(verbose_name='Имя', max_length=150)
+
+    def __str__(self):
+        return self.full_name
+
 
 
 

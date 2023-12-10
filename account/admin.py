@@ -5,8 +5,8 @@ from .models import User, Role
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    search_fields = ('name',)
-    list_filter = ('name', )
+    search_fields = ('fullname',)
+    list_filter = ('fullname', )
     list_per_page = 10
 
 

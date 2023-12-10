@@ -34,7 +34,8 @@ class UserForm(FormControlMixin, UserCreationForm):
             # instance.groups_set.clear()
             # print(self.cleaned_data['groups'])
             for role in self.cleaned_data['roles']:
-                instance.rolse.add(role)
+                instance.roles.add(role)
+
 
         self.save_m2m = save_m2m
 
