@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="content">
+
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+
+            <!-- Main content -->
+            <div class="invoice p-3 mb-3">
+              <!-- title row -->
+              <div class="row">
+                <div class="col-12">
+                  <h4>
+                    <small class="float-left">Дата публикации: {{ task.title}}</small>
+                    <br>
+                  </h4>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- info row -->
+              <div class="row invoice-info">
+                <div class="col-sm-4 invoice-col">
+                  <p>Дата публикации: {{ task.date_end|date:"d.m.Y"}}</p>
+                  <p>Дата окончания: {{ task.date_posted|date:"d.m.Y"}}</p>
+                  <p>К материалу: {% if task.material %}
+                                  {{ task.material}}
+                                  {% else %}
+                                  &mdash; <!-- Прочерк -->
+                                  {% endif %}
+                  </p>
+                  <p>Максимальный балл: {{ task.max_score }} </p>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+                  <h4>Задание</h4>
+                  {{ task.task }}
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+                 <h4>Описание</h4>
+                  {{ task.description }}
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+
+              <!-- Table row -->
+              <div class="row">
+                <div class="col-12 table-responsive">
+                  <table class="table">
+                    <thead>
+                    <tr>
+                      <th>Студент</th>
+                      <th>Балл</th>
+                      <th>Дата</th>
+                      <th>Отзыв</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                      {% for c_task in completed_tasks%}
+                      <tr>
+                        <td>{{c_task.student.full_name}}</td>
+                        <td>{{c_task.score}}</td>
+                        <td>{{c_task.date}}</td>
+                        <td>{{c_task.feedback}}</td>
+                      </tr>
+                      {% endfor%}
+                    </tbody>
+                  </table>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+
+
+              <!-- /.row -->
+
+              <!-- this row will not appear when printing -->
+              <div class="row no-print">
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#send_task">
+                        Отправить задание
+                      </button>
+                </div>
+              </div>
+
+            </div>
+            <!-- /.invoice -->
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+
+
+          <div class="modal fade" id="send_task">
+         <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Отправить задание</h4>
+              </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'send_task' task.pk %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ completed_task_form.as_p }}
+                    <div class="modal-footer">
+                   <button type="submit" class="btn  btn-primary">
+                   Отправить
+                   </button>
+                   <button type="button" class="btn btn-default btn-close"
+                      data-dismiss="modal">Закрыть
+                   </button>
+                </div>
+                </form>
+            </div>
+          </div>
+         </div>
+    </div>
+
+
+      </div><!-- /.container-fluid -->
+    </section>
+{% endblock content %}

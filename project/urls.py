@@ -19,8 +19,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
+from management.views import CourseListView
+
+
 urlpatterns = [
+    path('', CourseListView.as_view(), name='index'),
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
     path('management/', include('management.urls')),
+
+    path('select2/', include('django_select2.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

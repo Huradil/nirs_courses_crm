@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.messages.views import SuccessMessageMixin
-from django.views.generic import CreateView, DetailView, UpdateView, ListView, View
+from django.views.generic import CreateView
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.views import LoginView
 
@@ -20,13 +20,13 @@ class UserCreateView(SuccessMessageMixin, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        if get_object_or_404(Role, name='student') in self.object.roles.all():
+        if get_object_or_404(Role, name='Student') in self.object.roles.all():
             Student.objects.create(
                 user=self.object,
                 full_name=self.object.fullname,
                 name=self.object.first_name
             )
-        if get_object_or_404(Role, name='teacher') in self.object.roles.all():
+        if get_object_or_404(Role, name='Teacher') in self.object.roles.all():
             Teacher.objects.create(
                 user=self.object,
                 full_name=self.object.fullname,
