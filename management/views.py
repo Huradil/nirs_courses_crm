@@ -97,16 +97,16 @@ class TaskDetailView(DetailView):
 
 def send_course_task(request, task_pk):
     if request.method == 'POST':
-        # try:
-        task = Task.objects.get(pk=task_pk)
-        student = Student.objects.get(user=request.user)
-        CompletedTask.objects.create(
-            student=student,
-            task=task,
-            file=request.FILES.get('file') if request.FILES.get('file') else None,
-            text=request.POST.get('text') if request.POST.get('text') else None,
-        )
-        return redirect('task_detail', pk=task_pk)
-        # except Exception as e:
-        #     messages.error(request, f'Произошла ошибка: {e}')
-        #     return redirect('task_detail', pk=task_pk)
+        try:
+            task = Task.objects.get(pk=task_pk)
+            student = Student.objects.get(user=request.user)
+            CompletedTask.objects.create(
+                student=student,
+                task=task,
+                file=request.FILES.get('file') if request.FILES.get('file') else None,
+                text=request.POST.get('text') if request.POST.get('text') else None,
+            )
+            return redirect('task_detail', pk=task_pk)
+        except Exception as e:
+            messages.error(request, f'Произошла ошибка: {e}')
+            return redirect('task_detail', pk=task_pk)
