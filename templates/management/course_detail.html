@@ -43,18 +43,20 @@
                                                 &mdash; <!-- Прочерк -->
                                               {% endif %}</a>
                </li>
+                {% if is_teacher_or_admin %}
                 <div class="btn-group" style="float: right">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
             Действия
         </button>
-        <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" data-toggle="modal"
-                   data-target="#add_material"><b>Добавить материал</b></a>
-            <a class="dropdown-item" data-toggle="modal"
-                   data-target="#add_task"><b>Добавить задание</b></a>
+            <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" data-toggle="modal"
+                       data-target="#add_material"><b>Добавить материал</b></a>
+                <a class="dropdown-item" data-toggle="modal"
+                       data-target="#add_task"><b>Добавить задание</b></a>
+            </div>
         </div>
-    </div>
+        {% endif %}
     </ul>
          </div>
             </div>
@@ -203,7 +205,7 @@
                             {% endif %}
                         </td>
                         <td> <a href="{% url 'task_detail' task.pk %}">
-                                К заданию
+                                 <i class="nav-icon fas fa-edit"></i>
                                </a></td>
                       </tr>
                 {% endfor %}

@@ -1,0 +1,18 @@
+.table-container {
+    max-width: 100%; /* Задаем максимальную ширину для контейнера */
+    overflow-x: auto; /* Добавляем горизонтальный скролл при необходимости */
+}
+
+table {
+    width: 100%; /* Задаем таблице ширину 100% от родительского контейнера */
+    border-collapse: collapse; /* Сливаем границы ячеек для более компактного внешнего вида */
+}
+
+th, td {
+    padding: 8px;
+    border: 1px solid black;
+}
+
+.yellow-bg {
+    background-color: yellow;
+}

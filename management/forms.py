@@ -41,3 +41,9 @@ class CompletedTaskForm(FormControlMixin, forms.ModelForm):
     class Meta:
         model = CompletedTask
         fields = ['file', 'text']
+
+
+class CompletedTaskFeedbackForm(FormControlMixin, forms.ModelForm):
+    class Meta:
+        model = CompletedTask
+        fields = ['score', 'feedback']

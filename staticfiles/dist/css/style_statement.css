@@ -1,0 +1,38 @@
+.table-container {
+    max-width: 100%; /* Задаем максимальную ширину для контейнера */
+    overflow-x: auto; /* Добавляем горизонтальный скролл при необходимости */
+}
+
+table {
+    width: 100%; /* Задаем таблице ширину 100% от родительского контейнера */
+    border-collapse: collapse; /* Сливаем границы ячеек для более компактного внешнего вида */
+}
+
+th, td {
+    padding: 8px;
+    border: 1px solid black;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+td {
+  overflow: hidden;
+  width: 200px;
+  max-width: 200px;
+}
+
+th:nth-child(2) {
+  width: 300px;
+}
+
+th, td {
+  /* Убираем свойство width, чтобы позволить столбцам расширяться */
+  text-align: center;
+  width: auto;
+}
+

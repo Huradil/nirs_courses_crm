@@ -13,7 +13,7 @@
               <div class="row">
                 <div class="col-12">
                   <h4>
-                    <small class="float-left">Дата публикации: {{ task.title}}</small>
+                    <small class="float-left">Название: {{ task.title}}</small>
                     <br>
                   </h4>
                 </div>
@@ -56,15 +56,18 @@
                       <th>Балл</th>
                       <th>Дата</th>
                       <th>Отзыв</th>
+                      <th>Оценить задание</th>
                     </tr>
                     </thead>
                     <tbody>
-                      {% for c_task in completed_tasks%}
+                      {% for c_task in completed_tasks %}
                       <tr>
                         <td>{{c_task.student.full_name}}</td>
                         <td>{{c_task.score}}</td>
                         <td>{{c_task.date}}</td>
                         <td>{{c_task.feedback}}</td>
+                          <td> <a href="{% url 'completed_task_detail' c_task.pk %}">
+                              <i class="nav-icon fas fa-edit"></i></a></td>
                       </tr>
                       {% endfor%}
                     </tbody>
@@ -115,8 +118,8 @@
           </div>
          </div>
     </div>
-
-
       </div><!-- /.container-fluid -->
     </section>
+
+
 {% endblock content %}

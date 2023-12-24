@@ -50,7 +50,7 @@ class User(AbstractUser):
 
         user_role = self.roles.all()
         # Проверяем есть ли в группах пользователя права на выполнение действия
-        if user_role.objects.filter(name=perm).exists():
+        if user_role.filter(name=perm).exists():
             return True
         return False
 

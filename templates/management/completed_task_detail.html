@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/account.css' %}">
+    <!-- Main content -->
+    <section class="content">
+       <div class="container-fluid">
+           <div class="row">
+               <div class="col-md-3">
+                  <!-- Profile Image -->
+                  <div class="card card-secondary card-outline">
+                     <div class="card-body box-profile">
+                        <h3 class="profile-username text-center"> </h3>
+                        <p class="text-muted text-center">Задание</p>
+                        <ul class="list-group list-group-unbordered mb-3">
+                           <li class="list-group-item">
+                              <b>Студент</b> <a class="float-right">{{ task.student.full_name }} </a>
+                           </li>
+                           <li class="list-group-item">
+                              <b>Максимальный балл</b> <a class="float-right">{{ task.task.max_score}} </a>
+                           </li>
+                           <li class="list-group-item">
+                              <b>Дата выполнения</b> <a class="float-right">{{ task.date }} </a>
+                           </li>
+                           <li class="list-group-item">
+                              <b>Курс</b> <a class="float-right">{{ task.task.course.course_name }} </a>
+                           </li>
+                            <li class="list-group-item">
+                              <b>Фактический балл </b> <a class="float-right">
+                                {% if task.score %}
+                                  {{ task.score }}
+                                {% else %}
+                                Пока не оценено
+                                {% endif %}
+                            </a>
+                           </li>
+                            <li class="list-group-item">
+                              <b>Срок выполнения</b> <a class="float-right">{{ task.task.date_end }} </a>
+                           </li>
+                           <div class="btn-group btn-block">
+                                <a class="btn btn-info dropdown-toggle dropdown-hover dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                    <b>Действия</b>
+                                </a>
+                                <div class="btn-block dropdown-menu" role="menu" style="">
+                                    {% if is_teacher_or_admin%}
+                                    <a class="dropdown-item" data-toggle="modal" data-target="#mark_task">Оценить</a>
+                                    {% endif %}
+                                    <a class="dropdown-item" data-toggle="modal" data-target="#change_task">Изменить</a>
+                                </div>
+                            </div>
+                        </ul>
+                     </div>
+                  </div>
+
+
+
+          <div class="modal fade" id="mark_task">
+         <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Оценить задание</h4>
+              </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'mark_task' task.pk %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ mark_task_form.as_p }}
+                    <div class="modal-footer">
+                   <button type="submit" class="btn  btn-primary">
+                   Отправить
+                   </button>
+                   <button type="button" class="btn btn-default btn-close"
+                      data-dismiss="modal">Закрыть
+                   </button>
+                </div>
+                </form>
+            </div>
+          </div>
+         </div>
+    </div>
+
+
+               </div>
+
+
+                       <div class="col-md-9">
+                  <!-- /.card-header -->
+                         <div class="card">
+         <div class="card-header p-1">
+                                  <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" id="task-text-tab" data-toggle="pill" href="#task-text" role="tab" aria-selected="true">Задание</a>
+                                    </li>
+                                    <li class="nav-item">
+                                      <a class="nav-link" id="task-file-tab" data-toggle="pill" href="#task-file" role="tab" aria-selected="false">Файлы</a>
+                                    </li>
+                                      <li class="nav-item">
+                                      <a class="nav-link" id="comment-tab" data-toggle="pill" href="#comment" role="tab" aria-selected="false">Комментарии</a>
+                                    </li>
+                                  </ul>
+
+                                <div class="card-body">
+                                  <div class="tab-content" id="custom-tabs-three-tabContent">
+                                    <div class="tab-pane fade active show" id="task-text" role="tabpanel" aria-labelledby="task-text-tab">
+                                      <p>{{ task.text }}</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="task-file" role="tabpanel" aria-labelledby="task-file-tab">
+                                    {% if task.file %}
+                                     <a href="{{ task.file.url }}" download>{{ task.file.name }}</a>
+                                    {% else %}
+                                     <p>Файл отсутствует</p>
+                                    {% endif %}
+                                    </div>
+                                    <div class="tab-pane fade" id="comment" role="tabpanel" aria-labelledby="comment-tab">
+                                    <p>{{ task.feedback }}</p>
+                                    </div>
+
+                                  </div>
+                                </div>
+                           </div>
+                        </div>
+                     </div>
+           </div>
+       </div>
+    </section>
+
+{% endblock content %}

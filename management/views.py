@@ -4,12 +4,15 @@ from django.views.generic import DetailView
 from django.contrib import messages
 
 from account.models import Student
-from .forms import CourseForm, MaterialForm, TaskForm, CompletedTaskForm
+from .forms import CourseForm, MaterialForm, TaskForm, CompletedTaskForm, CompletedTaskFeedbackForm
 from .models import Course, Material, Task, CompletedTask
+from .mixins import BasePermissionMixin
+from .functions import is_user_or_admin
 
 
-class CourseCreateView(View):
+class CourseCreateView(BasePermissionMixin, View):
     template_name = 'management/course_create.html'
+    permission_required = ['Teacher', 'Admin']
 
     def get(self, request):
         form = CourseForm()
@@ -21,6 +24,9 @@ class CourseCreateView(View):
             form.save()
             return redirect('index')
         return render(request, 'account/login.html', {'form': form})
+
+    def handle_permission_denied(self, request, exception):
+        return render(request, '404.html')
 
 
 class CourseListView(View):
@@ -43,6 +49,7 @@ class CourseDetailView(DetailView):
         context['students'] = self.object.students.all()
         context['material_form'] = MaterialForm()
         context['task_form'] = TaskForm()
+        context['is_teacher_or_admin'] = is_user_or_admin(self.request.user)
         return context
 
 
@@ -92,6 +99,7 @@ class TaskDetailView(DetailView):
         context['task'] = self.object
         context['completed_tasks'] = CompletedTask.objects.filter(task=self.object)
         context['completed_task_form'] = CompletedTaskForm()
+        context['is_teacher_or_admin'] = is_user_or_admin(self.request.user)
         return context
 
 
@@ -110,3 +118,35 @@ def send_course_task(request, task_pk):
         except Exception as e:
             messages.error(request, f'Произошла ошибка: {e}')
             return redirect('task_detail', pk=task_pk)
+
+
+class CompletedTaskDetailView(BasePermissionMixin, DetailView):
+    model = CompletedTask
+    template_name = 'management/completed_task_detail.html'
+    permission_required = ['Teacher', 'Admin']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['task'] = self.object
+        context['mark_task_form'] = CompletedTaskFeedbackForm()
+        context['is_teacher_or_admin'] = is_user_or_admin(self.request.user)
+        return context
+
+    def has_perms(self, perm_list, obj=None):
+        value = any(self.has_perm(perm, obj) for perm in perm_list)
+        if value:
+            return value
+        return self.request.user == self.get_object().student.user
+
+
+def mark_course_task(request, pk):
+    if request.method == 'POST':
+        try:
+            completed_task = CompletedTask.objects.get(pk=pk)
+            completed_task.score = request.POST.get('score')
+            completed_task.feedback = request.POST.get('feedback')
+            completed_task.save()
+            return redirect('task_detail', pk=completed_task.task.pk)
+        except Exception as e:
+            messages.error(request, f'Произошла ошибка: {e}')
+            return redirect('task_detail', pk=completed_task.task.pk)

@@ -9,4 +9,6 @@ urlpatterns = [
     path('course/<int:course_pk>/task/add/', views.add_course_task, name='add_course_task'),
     path('task/<int:pk>/', views.TaskDetailView.as_view(), name='task_detail'),
     path('task/<int:task_pk>/send/', views.send_course_task, name='send_task'),
+    path('completed_task/<int:pk>/', views.CompletedTaskDetailView.as_view(), name='completed_task_detail'),
+    path('completed_task/<int:pk>/mark/', views.mark_course_task, name='mark_task'),
 ]
