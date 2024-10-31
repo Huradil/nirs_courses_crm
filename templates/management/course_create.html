@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form>
+<div class="container d-flex justify-content-center align-items-center vh-10">
+  <div class="mx-auto w-50 bg-light p-4 rounded">
+<form method="post">
   <div class="mb-3">
     {% csrf_token %}
     {{ form.as_p }}
   </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-primary">Создать</button>
 </form>
+  </div>
+</div>
 
 {% endblock content%}

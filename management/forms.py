@@ -9,6 +9,10 @@ class CourseForm(FormControlMixin, forms.ModelForm):
         label='Дата начала курса',
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
     )
+    date_end = forms.DateField(
+        label='Дата окончания курса',
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+    )
 
     class Meta:
         model = Course

@@ -72,8 +72,8 @@ class Student(models.Model):
 
 
 class Teacher(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Преподаватель')
-    full_name = models.CharField(verbose_name='ФИО студента', max_length=150)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Логин')
+    full_name = models.CharField(verbose_name='ФИО Преподавателя', max_length=150)
     name = models.CharField(verbose_name='Имя', max_length=150)
 
     def __str__(self):

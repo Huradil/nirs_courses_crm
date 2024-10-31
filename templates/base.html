@@ -40,7 +40,9 @@
                             Action
                           </button>
                           <div class="dropdown-menu">
-                             <a href="{% url 'logout' %}" class="nav-link">Выйти</a>
+                            <a href="#" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+    Выйти
+</a>
                              <a href="{% url 'course_create' %}" class="nav-link">Cоздать курс</a>
                           </div>
                         </div>
@@ -56,6 +58,9 @@
               </div>
           </div>
         </nav>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+    {% csrf_token %}
+</form>
 {% block content %}
 
     {% endblock %}

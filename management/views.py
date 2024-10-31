@@ -16,14 +16,15 @@ class CourseCreateView(BasePermissionMixin, View):
 
     def get(self, request):
         form = CourseForm()
-        return render(request, 'account/login.html', {'form': form})
+        return render(request, 'management/course_create.html', {'form': form})
 
     def post(self, request):
         form = CourseForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('index')
-        return render(request, 'account/login.html', {'form': form})
+        print(form.errors)
+        return render(request, 'management/course_create.html', {'form': form})
 
     def handle_permission_denied(self, request, exception):
         return render(request, '404.html')
