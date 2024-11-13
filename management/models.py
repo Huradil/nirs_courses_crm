@@ -76,7 +76,3 @@ class CompletedTask(models.Model):
 
     def __str__(self):
         return self.task.title
-
-
-
-

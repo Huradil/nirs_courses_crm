@@ -44,10 +44,10 @@ class Migration(migrations.Migration):
                 ('patronymic', models.CharField(max_length=150, verbose_name='Отчество')),
                 ('avatar', models.ImageField(blank=True, null=True, upload_to=account.models.user_directory_path, verbose_name='Аватарка')),
                 ('fullname', models.CharField(blank=True, max_length=150, null=True, verbose_name='ФИО')),
-                ('groups', models.ManyToManyField(blank=True, related_name='users', to='auth.group')),
+                ('groups', models.ManyToManyField(blank=True, related_name='account', to='auth.group')),
                 ('roles', models.ManyToManyField(to='account.role', verbose_name='Роли пользователя')),
                 ('user_groups', models.ManyToManyField(blank=True, related_name='custom_user_set', to='auth.group')),
-                ('user_permissions', models.ManyToManyField(blank=True, related_name='users', to='auth.permission')),
+                ('user_permissions', models.ManyToManyField(blank=True, related_name='account', to='auth.permission')),
             ],
             options={
                 'verbose_name': 'Пользователь',

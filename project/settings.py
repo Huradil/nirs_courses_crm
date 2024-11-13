@@ -32,6 +32,10 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+PROJECT_APPS = [
+    'account',
+    'management',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,10 +47,9 @@ INSTALLED_APPS = [
 
     'django_select2',
     'django_filters',
-
-    'account',
-    'management',
 ]
+
+INSTALLED_APPS += PROJECT_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -72,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'management.context_processor.get_sidebar_urls',
             ],
         },
     },

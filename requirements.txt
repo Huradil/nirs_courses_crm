@@ -1,6 +1,0 @@
-Django
-Pillow
-psycopg2
-django-select2
-django-filter
-django-glrm==1.1.3

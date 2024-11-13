@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">ФИО</th>
+      <th scope="col">Email</th>
+      <th scope="col">Курсы</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for student in students %}
+    <tr>
+      <td>{{student.id}}</td>
+      <td>{{student.fio}}</td>
+      <td>{{student.email}}</td>
+      <td>{{student.courses}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock content %}

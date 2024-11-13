@@ -3,7 +3,10 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import CreateView
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.views import LoginView
-
+from django.views import View
+from django.shortcuts import render
+from management.mixins import BasePermissionMixin
+from management.models import Course
 
 from .forms import UserForm, LoginUserForm
 from .models import Student, Teacher, Role
@@ -38,3 +41,23 @@ class UserCreateView(SuccessMessageMixin, CreateView):
 class UserLoginView(LoginView):
     form_class = LoginUserForm
     template_name = 'account/login.html'
+
+
+class StudentListView(BasePermissionMixin, View):
+    permission_required = ["Teacher", "Admin"]
+    sidebar_group = 'Студенты'
+    sidebar_name = 'Список студентов'
+    sidebar_icon = 'fas fa-list'
+
+    def get(self, request):
+        students = Student.objects.all()
+        students_data = []
+        for student in students:
+            students_data.append({
+                'id': student.id,
+                'fio': student.full_name,
+                'courses': ', '.join([course.course_name for course in Course.objects.filter(students=student)]),
+                "email": student.user.email,
+            })
+        return render(request, 'account/student_list.html', {'students': students_data})
+

@@ -13,6 +13,9 @@ from .functions import is_user_or_admin
 class CourseCreateView(BasePermissionMixin, View):
     template_name = 'management/course_create.html'
     permission_required = ['Teacher', 'Admin']
+    sidebar_group = 'Курсы'
+    sidebar_name = 'Создать курс'
+    sidebar_icon = 'fas fa-plus'
 
     def get(self, request):
         form = CourseForm()
@@ -27,7 +30,7 @@ class CourseCreateView(BasePermissionMixin, View):
         return render(request, 'management/course_create.html', {'form': form})
 
     def handle_permission_denied(self, request, exception):
-        return render(request, '404.html')
+        return render(request, '403.html')
 
 
 class CourseListView(View):
@@ -52,6 +55,14 @@ class CourseDetailView(DetailView):
         context['task_form'] = TaskForm()
         context['is_teacher_or_admin'] = is_user_or_admin(self.request.user)
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        course = self.get_object()
+        if not user.is_superuser and user not in [student.user for student in course.students.all()] and not \
+                user == course.teacher:
+            return render(request, '403.html')
+        return super().dispatch(request, *args, **kwargs)
 
 
 def add_course_material(request, course_pk):
@@ -83,7 +94,8 @@ def add_course_task(request, course_pk):
                 file=request.FILES.get('file'),
                 date_end=request.POST.get('date_end'),
                 max_score=request.POST.get('max_score'),
-                material=Material.objects.get(pk=request.POST.get('material')) if request.POST.get('material') else None,
+                material=Material.objects.get(pk=request.POST.get('material')) if request.POST.get(
+                    'material') else None,
             )
             return redirect('course_detail', pk=course_pk)
         except Exception as e:

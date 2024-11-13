@@ -1,0 +1,278 @@
+{% load static %}
+{% load cache %}
+{% cache None sidebar request.user.username %}
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="{% url 'index' %}" class="brand-link">
+      <!--
+      <img src="{% static 'dist/img/logo.png' %}" alt="KeyDev Logo" class="brand-image img-circle elevation-3" style="opacity: .8; background-color: white;">
+        -->
+      <span class="brand-text font-weight-light">Nirs Project</span>
+    </a>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user (optional) -->
+      {% if user.is_authenticated %}
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="info">
+          <a href="#" class="d-block">{{ user.username }}</a>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- SidebarSearch Form -->
+      <div class="form-inline">
+        <div class="input-group" data-widget="sidebar-search">
+          <input class="form-control form-control-sidebar" type="search" placeholder="Поиск" aria-label="Search">
+          <div class="input-group-append">
+            <button class="btn btn-sidebar">
+              <i class="fas fa-search fa-fw"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column nav-flat" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+          {% for sidebar_group in sidebar_urls %}
+          <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="{{ sidebar_group.icon|safe }} nav-icon"></i>
+                <p>
+                  {{ sidebar_group.name }}
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+            <ul class="nav nav-treeview">
+              {% for url_item in sidebar_group.items.all %}
+              {% if url_item.children.all %}
+              <li class="nav-item">
+                <a href="#" class="nav-link sidebar-group-item">
+                  <i class="{{ url_item.icon|safe }} nav-icon"></i>
+                  <p>
+                    {{ url_item.display_name }}
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+               <ul class="nav nav-treeview">
+                {% for child in url_item.children.all %}
+                  <li class="nav-item">
+                    {% if child.parent_item.group.name == 'Отчеты' %}
+                      <a href="{% url child.url.url_name %}" class="nav-link open-modal">
+                        <i class="{{ child.icon|safe }} nav-icon"></i>
+                        <p>{{ child.display_name }}</p>
+                      </a>
+                    {% else %}
+                    <a href="{% url child.url.url_name %}" class="nav-link">
+                      <i class="{{ child.icon|safe }} nav-icon"></i>
+                      <p>{{ child.display_name }}</p>
+                    </a>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+               </ul>
+              </li>
+              {% else %}
+                {% if url_item.display_name == 'Рассчитать амортизацию ОС' or url_item.display_name == 'Отправка Киб' or url_item.display_name == 'ГРС' or url_item.display_name == 'Отправка сообщений' or url_item.display_name == 'Баланс SMS-уведомлений'%}
+                  <li class="nav-item">
+                    <a href="{% url url_item.url.url_name %}" class="nav-link open-modal">
+                      <i class="{{ url_item.icon|safe }} nav-icon"></i>
+                      <p>{{ url_item.display_name }}</p>
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="nav-item">
+                    <a href="{% url url_item.url.url_name %}" class="nav-link">
+                      <i class="{{ url_item.icon|safe }} nav-icon"></i>
+                      <p>{{ url_item.display_name }}</p>
+                    </a>
+                  </li>
+                {% endif %}
+              {% endif %}
+              {% endfor %}
+            </ul>
+          </li>
+          {% endfor %}
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+
+<div class="modal" id="modal-report">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-title-report">{{ title }}</h4>
+        <button type="button" class="report-close-button" aria-label="Close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body" id="modal-body-report">
+      </div>
+
+    </div>
+  </div>
+</div>
+      <!-- /.modal -->
+  </aside>
+{% endcache %}
+
+{% block script %}
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script>
+  $(document).ready(function() {
+    function handleOpenModal(e, url) {
+        e.preventDefault();
+
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(data) {
+                if (data.form_html) {
+                    $('#modal-body-report').html(data.form_html);
+                    $('#modal-title-report').text(data.title);
+                    $("#modal-report form").attr('action', url);
+                    $("#modal-report").fadeIn(100);
+                } else {
+                    window.location.href = url;
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
+
+    $(".open-modal").on("click", function(e) {
+        var url = $(this).attr("href");
+        handleOpenModal(e, url);
+    });
+
+    $(document).on("click", ".report-close-button", function(e) {
+        $("#modal-report").fadeOut(100);
+    });
+
+    $(document).on("click", "#amortization-create", function(e) {
+        document.getElementById('lab1').style.display = 'none';
+        document.getElementById('loading-indicator').style.display = 'flex';
+    });
+
+    // Обработчик для результатов поиска в сайдбаре
+    $(document).on("click", ".sidebar-search-results a.list-group-item", function(e) {
+        var url = $(this).attr("href");
+        handleOpenModal(e, url);
+    });
+
+    function saveSidebarState() {
+        const sidebarState = {};
+        $(".nav-item").each(function() {
+            const item = $(this);
+            const isOpen = item.hasClass("menu-open");
+            const link = item.find(".nav-link");
+            const groupName = link.text().trim();
+            sidebarState[groupName] = isOpen;
+        });
+        localStorage.setItem("sidebarState", JSON.stringify(sidebarState));
+    }
+
+    function restoreSidebarState() {
+        const sidebarState = JSON.parse(localStorage.getItem("sidebarState"));
+        if (sidebarState) {
+            for (const groupName in sidebarState) {
+                const isOpen = sidebarState[groupName];
+                const groupItem = $(".nav-item").filter(function() {
+                    return $(this).find(".nav-link").text().trim() === groupName;
+                });
+                if (isOpen) {
+                    groupItem.addClass("menu-open");
+                }
+            }
+        }
+    }
+
+    restoreSidebarState();
+
+    $(".nav-item").on("click", function() {
+        saveSidebarState();
+    });
+});
+
+</script>
+<script>
+$(document).ready(function() {
+    $(".open-modal").on("click", function(e) {
+        e.preventDefault();
+        var url = $(this).attr("href");
+
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(data) {
+                if (data.form_html) {
+                    $('#modal-body-report').html(data.form_html);
+                    $('#modal-title-report').text(data.title);
+                    $("#modal-report form").attr('action', url);
+                    $("#modal-report").fadeIn(100);
+                } else {
+                    window.location.href = url;
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+   });
+   $(document).on("click", ".report-close-button", function(e) {
+      $("#modal-report").fadeOut(100);
+   });
+   $(document).on("click", "#amortization-create", function(e) {
+      document.getElementById('lab1').style.display = 'none';
+      document.getElementById('loading-indicator').style.display = 'flex';
+   });
+});
+</script>
+<script>
+$(document).ready(function() {
+    function saveSidebarState() {
+        const sidebarState = {};
+        $(".nav-item").each(function() {
+            const item = $(this);
+            const isOpen = item.hasClass("menu-open");
+            const link = item.find(".nav-link");
+            const groupName = link.text().trim();
+            sidebarState[groupName] = isOpen;
+        });
+        localStorage.setItem("sidebarState", JSON.stringify(sidebarState));
+    }
+
+    function restoreSidebarState() {
+        const sidebarState = JSON.parse(localStorage.getItem("sidebarState"));
+        if (sidebarState) {
+            for (const groupName in sidebarState) {
+                const isOpen = sidebarState[groupName];
+                const groupItem = $(".nav-item").filter(function() {
+                    return $(this).find(".nav-link").text().trim() === groupName;
+                });
+                if (isOpen) {
+                    groupItem.addClass("menu-open");
+                }
+            }
+        }
+    }
+
+    restoreSidebarState();
+
+    $(".nav-item").on("click", function() {
+        saveSidebarState();
+    });
+});
+</script>
+
+{% endblock script %}
